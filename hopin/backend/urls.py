@@ -9,5 +9,5 @@ urlpatterns = [
     path("past_hops", views.PastHops.as_view(), name="past_hops"),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('search/', views.search, name='search'),
+    path('search/', views.Search.as_view(), name='search'),
 ]

@@ -22,15 +22,13 @@ class TripSearchTestCase(TestCase):
     request is from champaign to chicago, with radius of x that should include this trip only
     other trips have same exact timings
     this tests that the filtering works fine
-
-
     """
 
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='driver', password='testpassword')
-        self.client = Client()
-        self.client.login(username='driver', password='testpassword')
+        self.user = User.objects.create_user(username='hopper', password='testpassword')
+        self.client = APIClient()
+        self.client.login(username='hopper', password='testpassword')
         Profile.objects.create(user=self.user, picture='default.png', driver_rating=-1, hopper_rating=-1)
         # Create a trip
         self.trip = Trip.objects.create(
@@ -59,6 +57,11 @@ class TripSearchTestCase(TestCase):
             open_seats=3,
             price=Decimal('50.00')
         )
+
+        response = self.client.post(reverse('token_obtain_pair'), {'username': 'hopper', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 200)
+        token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
     
     @patch('backend.views.google_maps.convert_address')
     @patch('backend.views.google_maps.convert_coords')
@@ -78,7 +81,7 @@ class TripSearchTestCase(TestCase):
                 return 41.8781136, -87.6297982
         mock_convert_address.side_effect = mocked_convert_address
 
-        c = Client()
+        c = self.client
         response = c.get(reverse('search'), {
             'date': '2024-02-24',
             'radius': '50',
@@ -102,7 +105,7 @@ class TripSearchTestCase(TestCase):
         mock_find_within_radius.return_value = {self.trip.id: (self.trip.pickup_latitude, self.trip.pickup_longitude)}
         mock_convert_coords.return_value = "123 Main Street"
 
-        c = Client()
+        c = self.client
         response = c.get(reverse('search'), {
             'date': '2024-02-24',
             'radius': '10',
@@ -116,7 +119,7 @@ class TripSearchTestCase(TestCase):
         self.assertEqual(response.json()['trips'][0]['trip_id'], self.trip.id)
 
     def test_search_view_missing_parameters(self):
-        c = Client()
+        c = self.client
         response = c.get(reverse('search'), {
             'date': '2024-02-24',
             # 'radius' parameter is missing
