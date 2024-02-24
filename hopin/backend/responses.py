@@ -1,4 +1,4 @@
-from .models import Trip
+from .models import Trip, HopperRequest
 from .maps import google_maps 
 
 class TripResponse:
@@ -20,4 +20,23 @@ class TripResponse:
             "price": str(self.trip.price),
             'pickup_address' : pickup_address,
             'dropoff_address' : dropoff_address
+        }
+
+class HopperRequestResponse:
+    def __init__(self, hopper_request: HopperRequest):
+        self.hopper_request = hopper_request
+
+    def to_dict(self):
+        STATUS_CHOICES = {
+            0: 'Requested',
+            1: 'Accepted',
+            2: 'Rejected',
+        }
+        return {
+            "hopper_request_id": self.hopper_request.id,
+            "trip_id": self.hopper_request.trip_id.id,
+            "hopper_id": self.hopper_request.hopper_id.id,
+            "hopper_username": self.hopper_request.hopper_id.username,
+            "hopper_status": STATUS_CHOICES[self.hopper_request.hopper_status],
+            "hopper_rating": self.hopper_request.hopper_id.profile.hopper_rating
         }

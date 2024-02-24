@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
-from .responses import TripResponse
+from .responses import TripResponse, HopperRequestResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
+from .models import Trip
 
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
@@ -17,6 +19,7 @@ class PastDrives(APIView):
         
         return Response({"past_trips": trips_data})
 
+
 class PastHops(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -29,3 +32,16 @@ class PastHops(APIView):
         hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
         
         return Response({"past_hops": hops_data})
+    
+
+class CurrentHopperRequests(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, trip_id):
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        hopper_requests = trip.trips_hopper_requests.all()
+
+        requests_data = [HopperRequestResponse(request).to_dict() for request in hopper_requests]
+        
+        return Response({"hopper_requests": requests_data})
