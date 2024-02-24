@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Ride, Profile
+from .models import Profile, Trip, HopperRequest
 
 # Register your models here.
-
-admin.site.register(Ride)
-admin.site.register(Profile)
+admin.site.register((Profile, Trip, HopperRequest))
