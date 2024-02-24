@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return "Hello World"
+    return HttpResponse("Hello World")
 #     s = ""
 #     ride_list = Ride.objects.all()
 #     for ride in ride_list:
