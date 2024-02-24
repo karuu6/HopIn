@@ -34,17 +34,6 @@ const Landing = ({ navigation }) => {
           >
             Welcome
           </Heading>
-          {/* <Heading
-            mt="1"
-            _dark={{
-              color: "warmGray.200",
-            }}
-            color="coolGray.600"
-            fontWeight="medium"
-            size="xs"
-          >
-            Sign in to continue!
-          </Heading> */}
 
           <VStack space={3} mt="5">
             <Link>

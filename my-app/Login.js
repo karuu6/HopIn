@@ -13,9 +13,37 @@ import {
   NativeBaseProvider,
 } from "native-base";
 
+import axios from "axios";
+import { useState, useEffect } from "react";
+
 import SignUp from "./SignUp";
 
 const Login = ({ navigation }) => {
+  const [message, setMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLogin = () => {
+    setErrorMessage("");
+
+    axios
+      .post("http://127.0.0.1:8000/api/token/", {
+        username: username,
+        password: password,
+      })
+      .then((response) => {
+        // Handle the response, for example, store the token in local storage
+        console.log("Token:", response.data.token);
+        // You can also navigate to another page upon successful login
+        navigation.navigate("Hopper");
+      })
+      .catch((error) => {
+        console.error("Login failed", error.response.data);
+        setErrorMessage("Login failed. Check your credentials.");
+      });
+  };
+
   return (
     <NativeBaseProvider>
       <Center w="100%">
@@ -44,12 +72,15 @@ const Login = ({ navigation }) => {
 
           <VStack space={3} mt="5">
             <FormControl>
-              <FormControl.Label>Email ID</FormControl.Label>
-              <Input />
+              <FormControl.Label>Username</FormControl.Label>
+              <Input onChangeText={(value) => setUsername(value)} />
             </FormControl>
             <FormControl>
               <FormControl.Label>Password</FormControl.Label>
-              <Input type="password" />
+              <Input
+                onChangeText={(value) => setPassword(value)}
+                type="password"
+              />
               <Link
                 _text={{
                   fontSize: "xs",
@@ -62,9 +93,14 @@ const Login = ({ navigation }) => {
                 Forget Password?
               </Link>
             </FormControl>
-            <Button mt="2" colorScheme="indigo">
+            <Button mt="2" colorScheme="indigo" onPress={handleLogin}>
               Sign in
             </Button>
+            {errorMessage && (
+              <Text color="red.500" mt="2">
+                {errorMessage}
+              </Text>
+            )}
             <HStack mt="6" justifyContent="center">
               <Text
                 fontSize="sm"

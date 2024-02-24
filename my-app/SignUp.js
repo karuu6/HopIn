@@ -42,7 +42,7 @@ const SignUp = () => {
           </Heading>
           <VStack space={3} mt="5">
             <FormControl>
-              <FormControl.Label>Email</FormControl.Label>
+              <FormControl.Label>User Name</FormControl.Label>
               <Input />
             </FormControl>
             <FormControl>
