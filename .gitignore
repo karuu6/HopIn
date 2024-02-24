@@ -4,3 +4,7 @@ __pycache__/
 
 # django
 db.sqlite3
+*.ipynb
+
+# misc
+.DS_Store
