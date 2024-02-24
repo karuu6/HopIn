@@ -3,4 +3,13 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello, world. You're at the HopIn index.")
+    return HttpResponse("Hello World")
+#     s = ""
+#     ride_list = Ride.objects.all()
+#     for ride in ride_list:
+#         s += f"<a href={ride.id}> {ride.id}</a>"
+#     return HttpResponse(s)
+
+# def view_ride(request, ride_id):
+#     r = Ride.objects.get(pk=ride_id)
+#     return HttpResponse(r.text)
