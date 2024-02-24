@@ -4,7 +4,7 @@ from django.db import models
 class Ride(models.Model):
     text = models.CharField(max_length=200)
 
-class Trips(models.Model):
+class Trip(models.Model):
     trip_id = models.AutoField(primary_key=True)
     driver_id = models.IntegerField()
     hopper_id = models.JSONField(default=list) 
@@ -30,8 +30,8 @@ class Trips(models.Model):
     def __str__(self):
         return f"Trip {self.trip_id} by Driver {self.driver_id}" 
 
-class HopperRequests(models.Model):
-    trip_id = models.ForeignKey('Trips', on_delete=models.CASCADE)
+class HopperRequest(models.Model):
+    trip_id = models.ForeignKey('Trip', on_delete=models.CASCADE)
     hopper_id = models.IntegerField()
     hopper_status = models.CharField(
         max_length=20,
