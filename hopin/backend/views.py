@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from .models import Trip, HopperRequest
 from .responses import TripResponse
 
 from rest_framework.views import APIView
