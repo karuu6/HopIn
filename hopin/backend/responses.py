@@ -18,7 +18,6 @@ class TripResponse:
             "end_time": self.trip.end_time.strftime('%H:%M:%S'),
             "open_seats": self.trip.open_seats,
             "price": str(self.trip.price),
-            "ride_status": self.trip.ride_status,
             'pickup_address' : pickup_address,
             'dropoff_address' : dropoff_address
         }
