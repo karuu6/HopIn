@@ -2,6 +2,10 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import Landing from "./Landing";
+import Login from "./Login";
+import SignUp from "./SignUp";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 export default function App() {
   const [message, setMessage] = useState("");
@@ -20,9 +24,13 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>{message}</Text>
-    </View>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
