@@ -1,4 +1,4 @@
-from django.urls import path, re_path, include
+from django.urls import path, include, re_path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -22,7 +22,6 @@ swagger_patterns = [
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path('search/', views.search, name='search')
 ]
 
 urlpatterns.extend(swagger_patterns)
