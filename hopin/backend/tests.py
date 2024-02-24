@@ -355,6 +355,84 @@ class CurrentHopperRequestsTests(TestCase):
             expected_response
         )
 
+
+class HoppersRequestsStatusTests(TestCase):
+    s_time = timezone.now()
+    s_time2 = timezone.now() + timedelta(hours=6)
+    s_time3 = timezone.now() + timedelta(hours=12)
+
+    def setUp(self):
+        self.user_driver = User.objects.create_user(username='driver', password='testpassword')
+        self.user_hopper = User.objects.create_user(username='hopper', password='testpassword2')
+        self.client = APIClient()
+        self.profile_driver = Profile.objects.create(user=self.user_driver, picture='default.png', driver_rating=5, hopper_rating=5)
+        self.profile_hopper = Profile.objects.create(user=self.user_hopper, picture='default.png', driver_rating=5, hopper_rating=3)
+
+        # Create test trip
+        self.trip1 = Trip.objects.create(driver_id=self.user_driver, date=timezone.now(), start_time=self.s_time, 
+                            end_time=self.s_time + timedelta(hours=2), pickup_latitude='40.1100516', 
+                            pickup_longitude='-88.2341611', dropoff_latitude='1.000000', 
+                            dropoff_longitude='1.000000', open_seats=4, price='10.00', ride_status=2)
+        
+        self.trip2 = Trip.objects.create(driver_id=self.user_driver, date=timezone.now(), start_time=self.s_time2, 
+                            end_time=self.s_time2 + timedelta(hours=2), pickup_latitude='1.000000', 
+                            pickup_longitude='1.000000', dropoff_latitude='40.1100516', 
+                            dropoff_longitude='-88.2341611', open_seats=2, price='20.00', ride_status=2)
+        
+        self.trip3 = Trip.objects.create(driver_id=self.user_driver, date=timezone.now(), start_time=self.s_time3, 
+                            end_time=self.s_time2 + timedelta(hours=2), pickup_latitude='10.000000', 
+                            pickup_longitude='10.000000', dropoff_latitude='10.000000', 
+                            dropoff_longitude='10.000000', open_seats=3, price='100.00', ride_status=0)
+        
+        # Create test hopper request
+        self.hopper_request = HopperRequest.objects.create(trip_id=self.trip1, hopper_id=self.user_hopper, hopper_status=0)
+        self.hopper_request = HopperRequest.objects.create(trip_id=self.trip2, hopper_id=self.user_hopper, hopper_status=2)
+        self.hopper_request = HopperRequest.objects.create(trip_id=self.trip3, hopper_id=self.user_hopper, hopper_status=1)
+
+        # Obtain token for authentication
+        response = self.client.post(reverse('token_obtain_pair'), {'username': 'hopper', 'password': 'testpassword2'})
+        self.token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+
+    def test_current_hopper_requests(self):
+        self.maxDiff = None
+        response = self.client.get(reverse('hoppers_requests_status'))
+
+        self.assertEqual(response.status_code, 200)
+        expected_response = {
+            "hopper_requests": [
+                {
+                "hopper_request_id": 1,
+                "trip_id": 1,
+                "hopper_id": 2,
+                "hopper_username": 'hopper',
+                "hopper_status": 'Requested',
+                "hopper_rating": 3
+                },
+                {
+                "hopper_request_id": 2,
+                "trip_id": 2,
+                "hopper_id": 2,
+                "hopper_username": 'hopper',
+                "hopper_status": 'Rejected',
+                "hopper_rating": 3
+                },
+                {
+                "hopper_request_id": 3,
+                "trip_id": 3,
+                "hopper_id": 2,
+                "hopper_username": 'hopper',
+                "hopper_status": 'Accepted',
+                "hopper_rating": 3
+                }
+            ]
+        }
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            expected_response
+        )
+
+
 class UtilsTestCase(TestCase):
 
     def test_find_within_radius(self):

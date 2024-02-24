@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date, parse_time
 from .models import *
@@ -107,6 +107,19 @@ class CurrentHopperRequests(APIView):
         requests_data = [HopperRequestResponse(request).to_dict() for request in hopper_requests]
         
         return Response({"hopper_requests": requests_data})
+
+
+class HoppersRequestsStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user_id = request.user.id
+        
+        hopper_requests = HopperRequest.objects.filter(hopper_id=user_id)
+        
+        requests_data = [HopperRequestResponse(request).to_dict() for request in hopper_requests]
+        
+        return JsonResponse({"hopper_requests": requests_data})
 
 
 class SignUp(generics.CreateAPIView):
