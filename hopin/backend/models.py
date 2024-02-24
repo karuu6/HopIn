@@ -11,8 +11,8 @@ class Profile(models.Model):
 class Trip(models.Model):
     driver_id = models.ForeignKey(User, related_name='driven_trips', on_delete=models.CASCADE)
     hoppers = models.ManyToManyField(User, related_name='hopped_trips', blank=True) 
-    ride_status = models.IntegerField() # 0: posted, 1: in-progress, 2: done
-    date = models.DateField(default=0)
+    ride_status = models.IntegerField(default=0) # 0: posted, 1: in-progress, 2: done
+    date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     pickup_latitude = models.DecimalField(max_digits=9, decimal_places=6)
