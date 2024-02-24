@@ -22,10 +22,18 @@ Install the dependencies and start the server.
 
 ```sh
 cd HopIn
-pip install -r --use-pep517 requirements.txt
+pip install --use-pep517 -r requirements.txt
 cd hopin
 python manage.py migrate
 python manage.py runserver
+```
+
+## Testing
+
+To run test cases ensure you are in the hopin folder
+
+```sh
+python manage.py test backend
 ```
 
 Installation Steps for React Native

@@ -1,10 +1,13 @@
 from django.shortcuts import get_object_or_404
-from .models import Trip, HopperRequest
 from .responses import TripResponse
+from .serializers import SignUpSerializer
 
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
+from django.contrib.auth.models import User
 
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
@@ -30,3 +33,8 @@ class PastHops(APIView):
         hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
         
         return Response({"past_hops": hops_data})
+
+class SignUp(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = SignUpSerializer
