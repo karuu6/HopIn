@@ -9,18 +9,9 @@ class Profile(models.Model):
     hopper_rating = models.IntegerField(default=-1)
 
 class Trip(models.Model):
-    trip_id = models.AutoField(primary_key=True)
-    driver_id = models.ForeignKey(Profile, related_name='driven_trips', on_delete=models.CASCADE)
-    hoppers = models.ManyToManyField(Profile, related_name='hopped_trips', blank=True) 
-    ride_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('posted', 'Posted'),
-            ('in-progress', 'In Progress'),
-            ('done', 'Done')
-        ],
-        default='posted'
-    )
+    driver_id = models.ForeignKey(User, related_name='driven_trips', on_delete=models.CASCADE)
+    hoppers = models.ManyToManyField(User, related_name='hopped_trips', blank=True) 
+    ride_status = models.IntegerField() # 0: posted, 1: in-progress, 2: done
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -35,17 +26,9 @@ class Trip(models.Model):
         return f"Trip {self.trip_id} by Driver {self.driver_id}" 
 
 class HopperRequest(models.Model):
-    trip_id = models.ForeignKey('Trip', related_name='hopper_requests', on_delete=models.CASCADE)
-    hopper_id = models.IntegerField()
-    hopper_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('requested', 'Requested'),
-            ('accepted', 'Accepted'),
-            ('rejected', 'Rejected')
-        ],
-        default='requested'
-    )
+    trip_id = models.ForeignKey(Trip, related_name='trips_hopper_requests', on_delete=models.CASCADE)
+    hopper_id = models.ForeignKey(User, related_name='hoppers_hopper_requests', on_delete=models.CASCADE)
+    hopper_status = models.IntegerField() # 0: requested, 1: accepted, 2: rejected
 
     def __str__(self):
         return f"Hopper {self.hopper_id} for Trip {self.trip_id} - {self.get_hopper_status_display()}"
