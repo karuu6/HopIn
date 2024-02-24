@@ -15,7 +15,7 @@ import {
 
 import SignUp from "./SignUp";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   return (
     <NativeBaseProvider>
       <Center w="100%">
@@ -81,7 +81,7 @@ const Login = () => {
                   fontWeight: "medium",
                   fontSize: "sm",
                 }}
-                href="/signup"
+                onPress={() => navigation.navigate("SignUp")}
               >
                 Sign Up
               </Link>

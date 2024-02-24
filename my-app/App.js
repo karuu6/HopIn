@@ -5,32 +5,37 @@ import React, { useState, useEffect } from "react";
 import Landing from "./Landing";
 import Login from "./Login";
 import SignUp from "./SignUp";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Button, NativeBaseProvider } from "native-base";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000")
+  // useEffect(() => {
+  //   axios
+  //     .get("http://127.0.0.1:8000")
 
-      .then((response) => {
-        setMessage(response.data);
-      })
+  //     .then((response) => {
+  //       setMessage(response.data);
+  //     })
 
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Landing">
+        <Stack.Screen name="Landing" component={Landing} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

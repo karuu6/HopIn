@@ -19,7 +19,7 @@ import {
 
 import Login from "./Login";
 
-const Landing = () => {
+const Landing = ({ navigation }) => {
   return (
     <NativeBaseProvider>
       <Center w="100%">
@@ -47,8 +47,12 @@ const Landing = () => {
           </Heading> */}
 
           <VStack space={3} mt="5">
-            <Link href="/login">
-              <Button mt="2" colorScheme="indigo">
+            <Link>
+              <Button
+                mt="2"
+                colorScheme="indigo"
+                onPress={() => navigation.navigate("Login")}
+              >
                 Hop-in today!
               </Button>
             </Link>
