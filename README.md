@@ -1,9 +1,11 @@
 # HopIn
 
 ## _A carpooling app_
+
 HopIn is a carpooling app built with Django and React Native
 
 ## Features
+
 - Post rides to and from any location
 - Driver/Rider safety verification
 - ✨Magic ✨
@@ -27,8 +29,18 @@ python manage.py runserver
 ```
 
 ## Testing
+
 To run test cases ensure you are in the hopin folder
 
 ```sh
 python manage.py test backend
+```
+
+Installation Steps for React Native
+
+```sh
+cd HopIn
+cd my-app
+npm install
+npm run web
 ```
