@@ -3,38 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date, parse_time
 from .models import *
 from .maps import google_maps
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Trip, HopperRequest
 from .responses import TripResponse
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
-def index(request):
-    return HttpResponse("Hello World")
 
-# def view_ride(request, ride_id):
-#     r = Ride.objects.get(pk=ride_id)
-#     return HttpResponse(r.text)
-#225 S Canal St, Chicago, IL 60606
-
-@swagger_auto_schema(
-    method='get',
-    manual_parameters=[
-        openapi.Parameter('date', openapi.IN_QUERY, description="Date of the trip", type=openapi.TYPE_STRING),
-        openapi.Parameter('radius', openapi.IN_QUERY, description="Search radius in miles", type=openapi.TYPE_NUMBER),
-        openapi.Parameter('pickup_loc', openapi.IN_QUERY, description="Pickup location address", type=openapi.TYPE_STRING),
-        openapi.Parameter('dropoff_loc', openapi.IN_QUERY, description="Dropoff location address", type=openapi.TYPE_STRING),
-        openapi.Parameter('arrive_by', openapi.IN_QUERY, description="Time to arrive by", type=openapi.TYPE_STRING),
-        openapi.Parameter('leave_by', openapi.IN_QUERY, description="Time to leave by", type=openapi.TYPE_STRING),
-    ],
-    responses={200: 'Success'}
-)
-@api_view(['GET'])
 def search(request):
     date_str = request.GET.get('date', None)
     radius_str = request.GET.get('radius', None)
@@ -88,25 +63,26 @@ def search(request):
     
     return JsonResponse({'trips': trips_data})
 
+class PastDrives(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        user = request.user
+        # Using the 'driven_trips' related_name to filter trips where the user is a driver
+        past_trips = user.driven_trips.filter(ride_status=2)
 
-@login_required
-def past_drives(request):
-    user = request.user
-    
-    # Using the 'driven_trips' related_name to filter trips where the user is a driver
-    past_trips = user.driven_trips.filter(ride_status=2)
+        trips_data = [TripResponse(trip).to_dict() for trip in past_trips]
+        
+        return Response({"past_trips": trips_data})
 
-    trips_data = [TripResponse(trip).to_dict() for trip in past_trips]
-    
-    return JsonResponse({"past_trips": trips_data})
+class PastHops(APIView):
+    permission_classes = (IsAuthenticated,)
 
-@login_required
-def past_hops(request):
-    user = request.user
-    
-    # Using the 'hopped_trips' related_name to filter trips where the user is a hopper
-    past_hops = user.hopped_trips.filter(ride_status=2)
-    
-    hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
-    
-    return JsonResponse({"past_hops": hops_data})
+    def get(self, request):
+        user = request.user
+        
+        # Using the 'hopped_trips' related_name to filter trips where the user is a hopper
+        past_hops = user.hopped_trips.filter(ride_status=2)
+        
+        hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
+        
+        return Response({"past_hops": hops_data})

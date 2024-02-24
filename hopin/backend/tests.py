@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Trip, Profile
@@ -7,6 +7,8 @@ from datetime import timedelta
 from unittest.mock import patch
 from decimal import Decimal
 from .maps.google_maps import find_within_radius
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
 class TripSearchTestCase(TestCase):
 
@@ -126,8 +128,6 @@ class TripSearchTestCase(TestCase):
         self.assertEqual(response.json()['error'], 'Missing or invalid parameters')
 
 
-
-
 class PastDrivesTests(TestCase):
     s_time = timezone.now()
     s_time2 = timezone.now() + timedelta(hours=6)
@@ -136,7 +136,7 @@ class PastDrivesTests(TestCase):
     def setUp(self):
         # Create a test user and log them in
         self.user = User.objects.create_user(username='driver', password='testpassword')
-        self.client = Client()
+        self.client = APIClient()
         self.client.login(username='driver', password='testpassword')
         Profile.objects.create(user=self.user, picture='default.png', driver_rating=-1, hopper_rating=-1)
 
@@ -159,6 +159,11 @@ class PastDrivesTests(TestCase):
 
     @patch('backend.maps.google_maps.convert_coords')
     def test_past_drives(self, mock_convert_coords):
+        response = self.client.post(reverse('token_obtain_pair'), {'username': 'driver', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 200)
+        token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+
         mock_convert_coords.side_effect = ['Mocked Pickup Address', 'Mocked Drop-off Address', 'Mocked Pickup Address 2', 'Mocked Drop-off Address 2']
 
         response = self.client.get(reverse('past_drives'))
@@ -208,7 +213,7 @@ class PastHopsTests(TestCase):
         self.maxDiff = None
         # Create a test user and log them in
         self.user = User.objects.create_user(username='hopper', password='testpassword')
-        self.client = Client()
+        self.client = APIClient()
         self.client.login(username='hopper', password='testpassword')
         Profile.objects.create(user=self.user, picture='default.png', driver_rating=-1, hopper_rating=-1)
 
@@ -233,6 +238,11 @@ class PastHopsTests(TestCase):
 
     @patch('backend.maps.google_maps.convert_coords')
     def test_past_hops(self, mock_convert_coords):
+        response = self.client.post(reverse('token_obtain_pair'), {'username': 'hopper', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 200)
+        token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+
         mock_convert_coords.side_effect = ['Mocked Pickup Address for Hops', 'Mocked Drop-off Address for Hops', 'Mocked Pickup Address 2 for Hops', 'Mocked Drop-off Address 2 for Hops']
 
         response = self.client.get(reverse('past_hops'))
