@@ -1,11 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date, parse_time
 from .models import *
 from .maps import google_maps
-from .responses import TripResponse
+from .responses import TripResponse, HopperRequestResponse
 from .serializers import SignUpSerializer
-
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -69,6 +68,8 @@ class Search(APIView):
         
         return Response({'trips': trips_data})
 
+from .models import Trip
+
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
@@ -79,6 +80,7 @@ class PastDrives(APIView):
         trips_data = [TripResponse(trip).to_dict() for trip in past_trips]
         
         return Response({"past_trips": trips_data})
+
 
 class PastHops(APIView):
     permission_classes = (IsAuthenticated,)
@@ -92,6 +94,33 @@ class PastHops(APIView):
         hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
         
         return Response({"past_hops": hops_data})
+    
+
+class CurrentHopperRequests(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, trip_id):
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        hopper_requests = trip.trips_hopper_requests.all()
+
+        requests_data = [HopperRequestResponse(request).to_dict() for request in hopper_requests]
+        
+        return Response({"hopper_requests": requests_data})
+
+
+class HoppersRequestsStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user_id = request.user.id
+        
+        hopper_requests = HopperRequest.objects.filter(hopper_id=user_id)
+        
+        requests_data = [HopperRequestResponse(request).to_dict() for request in hopper_requests]
+        
+        return JsonResponse({"hopper_requests": requests_data})
+
 
 class SignUp(generics.CreateAPIView):
     queryset = User.objects.all()
