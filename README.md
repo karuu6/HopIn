@@ -10,7 +10,7 @@ HopIn is a carpooling app built with Django and React Native
 
 ## Installation
 
-Run the following to use google maps api key:
+Add the following to your .zshrc or .bashrc and then source it to use google maps api key:
 
 `export GOOGLE_API_KEY=<insert key here>`
 
