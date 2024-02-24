@@ -18,5 +18,6 @@ Install the dependencies and start the server.
 cd HopIn
 pip install -r requirements.txt
 cd hopin
+python manage.py migrate
 python manage.py runserver
 ```
