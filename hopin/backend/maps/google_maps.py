@@ -8,10 +8,10 @@ gmaps = googlemaps.Client(key=API_KEY)
 
 def find_within_radius(coordinates, query_point, radius):
     """
-    :param coordinates: List of tuples, where each tuple is (latitude, longitude)
+    :param coordinates: List of tuples, where each tuple is ((latitude, longitude), trip_id)
     :param query_point: Tuple of (latitude, longitude) for the query point
     :param radius: Radius in miles
-    :return: List of tuples within the given radius
+    :return: dictionary of {trip_id : (latitude, longitude)} if latitude and longitude fit in raidus of query point
     """
     def haversine(lat1, lon1, lat2, lon2):
     # Radius of the Earth in miles
@@ -28,7 +28,7 @@ def find_within_radius(coordinates, query_point, radius):
         return distance
     
     lat_query, lon_query = query_point
-    return [coord for coord in coordinates if haversine(lat_query, lon_query, coord[0], coord[1]) <= radius]
+    return {coord[1] : coord[0] for coord in coordinates if haversine(lat_query, lon_query, coord[0][0], coord[0][1]) <= radius}
 
 
 
