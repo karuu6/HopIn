@@ -6,8 +6,8 @@ class TripResponse:
         self.trip = trip
 
     def to_dict(self):
-        pickup_address = google_maps.convert_coords((self.trip.pickup_latitude, self.trip.pickup_longitude))
-        dropoff_address = google_maps.convert_coords((self.trip.dropoff_latitude, self.trip.dropoff_longitude))
+        pickup_address = google_maps.convert_coords(self.trip.pickup_latitude, self.trip.pickup_longitude)
+        dropoff_address = google_maps.convert_coords(self.trip.dropoff_latitude, self.trip.dropoff_longitude)
 
         return {
             "trip_id": self.trip.id,
