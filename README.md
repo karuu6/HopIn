@@ -25,3 +25,10 @@ cd hopin
 python manage.py migrate
 python manage.py runserver
 ```
+
+## Testing
+To run test cases ensure you are in the hopin folder
+
+```sh
+python manage.py test backend
+```
