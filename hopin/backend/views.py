@@ -44,8 +44,8 @@ def search(request):
     arrive_by_str = request.GET.get('arrive_by', None)
     leave_by_str = request.GET.get('leave_by', None)
 
-    if not date or not radius_str or not pickup_loc_str or not dropoff_loc_str:
-            return JsonResponse({'error': 'Missing or invalid arrive_by parameters'}, status=400)
+    if not date_str or not radius_str or not pickup_loc_str or not dropoff_loc_str:
+            return JsonResponse({'error': 'Missing or invalid parameters'}, status=400)
     
     # Parse the date and time strings into datetime.date and datetime.time objects
     date = parse_date(date_str) if date_str else None
@@ -58,7 +58,7 @@ def search(request):
     arrive_by = parse_time(arrive_by_str) if arrive_by_str else None
     leave_by = parse_time(leave_by_str) if leave_by_str else None
     
-    filter_kwargs = {}
+    filter_kwargs = {'open_seats__gt' : 0}
     
     # Add conditions to the dictionary based on the presence of parameters
     filter_kwargs['date'] = date
@@ -75,7 +75,7 @@ def search(request):
     filtered_for_pickup_trip_ids = google_maps.find_within_radius(pickup_trip_coordinates, (pickup_latitude, pickup_longitude), radius)
 
     dropoff_trip_coordinates = [((trip.dropoff_latitude, trip.dropoff_longitude), trip.id) for trip in trips if trip.id in filtered_for_pickup_trip_ids]
-    filtered_for_dropoff_trip_ids = google_maps.find_within_radius(dropoff_trip_coordinates, (dropoff_latitude, dropoff_latitude), radius)
+    filtered_for_dropoff_trip_ids = google_maps.find_within_radius(dropoff_trip_coordinates, (dropoff_latitude, dropoff_longitude), radius)
     
 
     
@@ -84,18 +84,11 @@ def search(request):
 
     for trip in trips:
         if trip.id in filtered_for_dropoff_trip_ids:
-            pickup_address = google_maps.convert_coords((trip.pickup_latitude, trip.pickup_longitude))
-            dropoff_address = google_maps.convert_coords((trip.dropoff_latitude, trip.dropoff_longitude))
-            trips_data.append({'trip_id': trip.id,
-                                'driver_id': trip.driver_id.id,
-                                'date': trip.date,
-                                'start_time': trip.start_time,
-                                'end_time': trip.end_time,
-                                'price': trip.price,
-                                'pickup_address' : pickup_address,
-                                'dropoff_address' : dropoff_address})
+            trips_data.append(TripResponse(trip).to_dict())
     
     return JsonResponse({'trips': trips_data})
+
+
 @login_required
 def past_drives(request):
     user = request.user

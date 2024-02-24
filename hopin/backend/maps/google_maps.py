@@ -34,7 +34,7 @@ def find_within_radius(coordinates, query_point, radius):
 
 #address -> string: valid address
 #returns -> tuple(float, float): latitude, longitude
-def convert_coords(address):
+def convert_address(address):
     geocode_result = gmaps.geocode(address)
     if geocode_result:
         latitude = geocode_result[0]['geometry']['location']['lat']
@@ -44,7 +44,7 @@ def convert_coords(address):
     else:
         print("Address not found.")
 
-def convert_address(latitude, longitude):
+def convert_coords(latitude, longitude):
     reverse_geocode_result = gmaps.reverse_geocode((latitude, longitude))
 
     if reverse_geocode_result:
