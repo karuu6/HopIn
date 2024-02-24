@@ -20,7 +20,7 @@ Install the dependencies and start the server.
 
 ```sh
 cd HopIn
-pip install -r requirements.txt
+pip install -r --use-pep517 requirements.txt
 cd hopin
 python manage.py migrate
 python manage.py runserver
