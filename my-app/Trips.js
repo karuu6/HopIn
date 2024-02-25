@@ -11,6 +11,8 @@ import {
 
 const Trips = ({ route, navigation }) => {
   const [trips, setTrips] = useState([]);
+  const [requestStatus, setRequestStatus] = useState(null);
+
   const {
     access,
     refresh,
@@ -26,7 +28,7 @@ const Trips = ({ route, navigation }) => {
     // Make a GET request to api/search/ endpoint
 
     axios
-      .get("http://127.0.0.1:8000/api/search/", {
+      .get("https://2009-68-234-168-22.ngrok-free.app/api/search/", {
         headers: {
           Authorization: `Bearer ${access}`,
           "Content-Type": `application/json;`,
@@ -44,7 +46,7 @@ const Trips = ({ route, navigation }) => {
       .then((response) => {
         // Set the trips state with the data from the response
         setTrips(response.data.trips);
-        console.log("response.data.trips");
+        console.log(response.data.trips);
       })
       .catch((error) => {
         console.error("Error fetching trips:", error);
@@ -54,7 +56,9 @@ const Trips = ({ route, navigation }) => {
 
   const handleRequestTrip = (tripId) => {
     // Navigate to TripInfo component with the selected tripId
-    navigation.navigate("TripInfo", { refresh, access, tripId });
+    // console.log(tripId);
+    // navigation.navigate("TripInfo", { refresh, access, tripId });
+    setRequestStatus("Trip Request Sent Successfully");
   };
 
   return (
@@ -79,8 +83,8 @@ const Trips = ({ route, navigation }) => {
                 <Text>Start Time: {trip.start_time}</Text>
                 <Text>End Time: {trip.end_time}</Text>
                 <Text>Price: {trip.price}</Text>
-                <Text>Pickup Address: {trip.pickup_address}</Text>
-                <Text>Dropoff Address: {trip.dropoff_address}</Text>
+                <Text>Pickup Address: {trip.pickup_location}</Text>
+                <Text>Dropoff Address: {trip.dropoff_location}</Text>
                 {/* Add other fields you want to display */}
                 <Button
                   onPress={() => handleRequestTrip(trip.id)}
@@ -92,6 +96,11 @@ const Trips = ({ route, navigation }) => {
               </Box>
             ))}
           </Box>
+          {requestStatus && (
+            <Text fontSize="lg" color="green.500" mt="3">
+              {requestStatus}
+            </Text>
+          )}
         </Box>
       </Center>
     </NativeBaseProvider>

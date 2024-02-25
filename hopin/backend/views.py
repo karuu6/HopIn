@@ -52,6 +52,7 @@ class Search(APIView):
         
 
         trips = Trip.objects.filter(**filter_kwargs).order_by('price')
+        print('pre process:', trips)
 
         pickup_trip_coordinates = [((trip.pickup_latitude, trip.pickup_longitude), trip.id) for trip in trips]
         filtered_for_pickup_trip_ids = google_maps.find_within_radius(pickup_trip_coordinates, (pickup_latitude, pickup_longitude), radius)
@@ -66,6 +67,7 @@ class Search(APIView):
             if trip.id in filtered_for_dropoff_trip_ids:
                 trips_data.append(TripSerializer(trip).data)
         
+        print('post process: ',trips_data)
         return Response({'trips': trips_data})
 
 

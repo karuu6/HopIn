@@ -38,7 +38,11 @@ const Driver = ({ route, navigation }) => {
     };
 
     axios
-      .post("http://127.0.0.1:8000/api/post_trip/", formData, { headers })
+      .post(
+        "https://2009-68-234-168-22.ngrok-free.app/api/post_trip/",
+        formData,
+        { headers }
+      )
       .then((response) => {
         console.log("Trip posted successfully:", response.data);
         // Handle success, e.g., navigate to a confirmation page

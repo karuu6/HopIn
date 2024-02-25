@@ -26,7 +26,7 @@ const SignUp = ({ navigation }) => {
     setErrorMessage("");
     // Make a POST request to api/signup
     axios
-      .post("http://127.0.0.1:8000/api/signup/", {
+      .post("https://2009-68-234-168-22.ngrok-free.app/api/signup/", {
         username: username,
         password: password,
       })

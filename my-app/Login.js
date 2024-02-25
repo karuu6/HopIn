@@ -28,7 +28,7 @@ const Login = ({ navigation }) => {
     setErrorMessage("");
 
     axios
-      .post("http://127.0.0.1:8000/api/token/", {
+      .post("https://2009-68-234-168-22.ngrok-free.app/api/token/", {
         username: username,
         password: password,
       })
