@@ -8,6 +8,7 @@ import SignUp from "./SignUp";
 import Hopper from "./Hopper";
 import Trips from "./Trips";
 import Start from "./Start";
+import Driver from "./Driver";
 
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavigationContainer } from "@react-navigation/native";
@@ -41,6 +42,7 @@ export default function App() {
         <Stack.Screen name="Hopper" component={Hopper} />
         <Stack.Screen name="Trips" component={Trips} />
         <Stack.Screen name="Start" component={Start} />
+        <Stack.Screen name="Driver" component={Driver} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.contrib.auth.models import User
+from django.db.models import F
+from rest_framework import status
+
 
 class Search(APIView):
     permission_classes = (IsAuthenticated,)
@@ -126,6 +129,44 @@ class SignUp(generics.CreateAPIView):
 class PostTrip(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = TripSerializer
+
+class AcceptHopperRequest(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, trip_id):
+        # Get the trip object
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        # Check if there are open seats
+        if trip.open_seats <= 0:
+            return Response({"error": "No open seats available"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Since you're accepting the hopper request, you might not need to deserialize request data here
+        # Directly add the current user to hoppers and decrement open_seats
+        trip.open_seats -= 1
+        trip.hoppers.add(request.user)  # Add the current user to hoppers
+        trip.save()
+
+        # No need to use serializer for adding hopper in this case
+        return Response(None, status=status.HTTP_201_CREATED)
+
+class DeclineHopperRequest(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, hopper_request_id):
+        # Get the HopperRequest object
+        hopper_request = get_object_or_404(HopperRequest, pk=hopper_request_id)
+
+        # Check if the current user is the driver of the trip to authorize decline action
+        if hopper_request.trip_id.driver_id != request.user:
+            return Response({"error": "You are not authorized to decline this hopper request"}, status=status.HTTP_403_FORBIDDEN)
+
+        # Change the hopper request status to 2 (declined)
+        hopper_request.hopper_status = 2
+        hopper_request.save()
+
+        # Return a success response
+        return Response({"message": "Hopper request declined successfully"}, status=status.HTTP_200_OK)
 
 
 class PostHopperRequest(generics.CreateAPIView):

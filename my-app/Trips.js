@@ -24,6 +24,7 @@ const Trips = ({ route, navigation }) => {
 
   useEffect(() => {
     // Make a GET request to api/search/ endpoint
+
     axios
       .get("http://127.0.0.1:8000/api/search/", {
         headers: {
