@@ -43,7 +43,7 @@ def convert_address(address):
         #print(f"Coordinates for '{address}': Latitude {latitude}, Longitude {longitude}")
         return latitude, longitude
     else:
-        print("Address not found.")
+        return None
 
 def convert_coords(latitude, longitude):
     reverse_geocode_result = gmaps.reverse_geocode((latitude, longitude))
