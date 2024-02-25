@@ -23,7 +23,7 @@ class Trip(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"Trip {self.trip_id} by Driver {self.driver_id}" 
+        return f"Trip {self.id} by Driver {self.driver_id}" 
 
 class HopperRequest(models.Model):
     trip_id = models.ForeignKey(Trip, related_name='trips_hopper_requests', on_delete=models.CASCADE)

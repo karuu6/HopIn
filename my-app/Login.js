@@ -34,9 +34,12 @@ const Login = ({ navigation }) => {
       })
       .then((response) => {
         // Handle the response, for example, store the token in local storage
-        console.log("Token:", response.data.token);
+        console.log("Token:", response.data);
+        const access = response.data.access;
+        const refresh = response.data.refresh;
+
         // You can also navigate to another page upon successful login
-        navigation.navigate("Hopper");
+        navigation.navigate("Hopper", { access, refresh });
       })
       .catch((error) => {
         console.error("Login failed", error.response.data);
