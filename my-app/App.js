@@ -6,6 +6,10 @@ import Landing from "./Landing";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Hopper from "./Hopper";
+import Trips from "./Trips";
+import Start from "./Start";
+import Driver from "./Driver";
+
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -31,11 +35,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Landing">
-        <Stack.Screen name="Landing" component={Landing} />
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={Landing} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="Hopper" component={Hopper} />
+        <Stack.Screen name="Trips" component={Trips} />
+        <Stack.Screen name="Start" component={Start} />
+        <Stack.Screen name="Driver" component={Driver} />
       </Stack.Navigator>
     </NavigationContainer>
   );
