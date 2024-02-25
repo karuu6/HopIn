@@ -78,7 +78,7 @@ class PastDrives(APIView):
 
         trips_data = [TripSerializer(trip).data for trip in past_trips]
         
-        return Response({"past_trips": trips_data})
+        return Response({"driver_trips": trips_data})
 
 
 class PastHops(APIView):
@@ -93,7 +93,18 @@ class PastHops(APIView):
         hops_data = [TripSerializer(hop).data for hop in past_hops]
         
         return Response({"past_hops": hops_data})
-    
+
+class CurrentTripsForDriver(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        # Using the 'driven_trips' related_name to filter trips where the user is a driver
+        past_trips = user.driven_trips.exclude(ride_status=2)
+
+        trips_data = [TripSerializer(trip).data for trip in past_trips]
+        
+        return Response({"past_trips": trips_data})
 
 class CurrentHopperRequests(APIView):
     permission_classes = (IsAuthenticated,)
