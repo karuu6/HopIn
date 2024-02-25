@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
-from .models import Trip, Profile
+from .models import Trip, Profile, HopperRequest
 from .maps import google_maps
 
 
@@ -78,4 +78,21 @@ class TripSerializer(serializers.ModelSerializer):
             price = validated_data['price'],
         )
         trip.save()
-        return trip    
+        return trip
+    
+class HopperRequestSerializer(serializers.ModelSerializer):
+    hopper_username = serializers.SerializerMethodField('get_hopper_username')
+    hopper_rating = serializers.SerializerMethodField('get_hopper_rating')
+
+    def get_hopper_username(self, obj):
+        return obj.hopper_id.username
+
+    def get_hopper_rating(self, obj):
+        return obj.hopper_id.profile.hopper_rating
+
+    class Meta:
+        model = HopperRequest
+        fields = '__all__'
+    
+
+

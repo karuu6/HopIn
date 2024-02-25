@@ -1,6 +1,7 @@
 import googlemaps
 import os
 from math import radians, cos, sin, sqrt, atan2
+from datetime import datetime, timedelta
 
 API_KEY = os.environ.get('GOOGLE_API_KEY')
 
@@ -52,4 +53,22 @@ def convert_coords(latitude, longitude):
         #print(f"Address for ({latitude}, {longitude}): {address}")
         return address
     else:
-        return None
+        print("Address not found.")
+
+def estimate_arrival(orig_coords, dest_coords, departure_time):
+    directions_result = gmaps.directions(orig_coords,
+                                        dest_coords,
+                                        mode="driving",
+                                        departure_time=departure_time)
+    # Extract travel time
+    if directions_result:
+        # Duration in seconds
+        duration_seconds = directions_result[0]['legs'][0]['duration']['value']
+        
+        # Calculate estimated arrival time by adding duration to departure time
+        estimated_arrival_time = departure_time + timedelta(seconds=duration_seconds)
+        
+        print(f"Estimated arrival time: {estimated_arrival_time.strftime('%H:%M:%S')}")
+        return estimated_arrival_time
+    else:
+        print("No results found.")

@@ -30,7 +30,7 @@ class Trip(models.Model):
 class HopperRequest(models.Model):
     trip_id = models.ForeignKey(Trip, related_name='trips_hopper_requests', on_delete=models.CASCADE)
     hopper_id = models.ForeignKey(User, related_name='hoppers_hopper_requests', on_delete=models.CASCADE)
-    hopper_status = models.DateField(default=0) # 0: requested, 1: accepted, 2: rejected
+    hopper_status = models.IntegerField(default=0) # 0: requested, 1: accepted, 2: rejected
 
     def __str__(self):
         return f"Hopper {self.hopper_id} for Trip {self.trip_id} - {self.get_hopper_status_display()}"
