@@ -92,7 +92,7 @@ class TripSearchTestCase(TestCase):
         })
 
         self.assertEqual(len(response.json()['trips']), 1)
-        self.assertEqual(response.json()['trips'][0]['trip_id'], self.correct_trip.id)
+        self.assertEqual(response.json()['trips'][0]['id'], self.correct_trip.id)
     
     
 
@@ -116,7 +116,7 @@ class TripSearchTestCase(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['trips'][0]['trip_id'], self.trip.id)
+        self.assertEqual(response.json()['trips'][0]['id'], self.trip.id)
 
     def test_search_view_missing_parameters(self):
         c = self.client
@@ -173,39 +173,51 @@ class PastDrivesTests(TestCase):
         mock_convert_coords.side_effect = ['Mocked Pickup Address', 'Mocked Drop-off Address', 'Mocked Pickup Address 2', 'Mocked Drop-off Address 2']
 
         response = self.client.get(reverse('past_drives'))
-        formatted_start_time = self.s_time.strftime('%H:%M:%S')
-        formatted_end_time = (self.s_time + timedelta(hours=2)).strftime('%H:%M:%S')
+        formatted_start_time = self.s_time.strftime('%H:%M:%S.%f')
+        formatted_end_time = (self.s_time + timedelta(hours=2)).strftime('%H:%M:%S.%f')
 
-        formatted_start_time2 = self.s_time2.strftime('%H:%M:%S')
-        formatted_end_time2 = (self.s_time2 + timedelta(hours=2)).strftime('%H:%M:%S')
+        formatted_start_time2 = self.s_time2.strftime('%H:%M:%S.%f')
+        formatted_end_time2 = (self.s_time2 + timedelta(hours=2)).strftime('%H:%M:%S.%f')
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(
             str(response.content, encoding='utf8'),
             {"past_trips": [
                 {
-                    "trip_id": 1,
+                    "id": 1,
+                    "driver_id": 1,
                     "driver_username": 'driver',
-                    "driver_rating": -1,
                     "date": str(timezone.now().date()),
                     "start_time": formatted_start_time,
                     "end_time": formatted_end_time,
                     "open_seats": 4,
                     "price": "10.00",
-                    'pickup_address' : "Mocked Pickup Address",
-                    'dropoff_address' : "Mocked Drop-off Address"
+                    "pickup_latitude":"40.110052", 
+                    "pickup_longitude":"-88.234161",
+                    "dropoff_latitude":"1.000000", 
+                    "dropoff_longitude":"1.000000",
+                    "dropoff_location":"",
+                    "pickup_location":"",
+                    "ride_status": 2,
+                    'hoppers': []
                 }, 
                 {
-                    "trip_id": 2,
+                    "id": 2,
+                    "driver_id": 1,
                     "driver_username": 'driver',
-                    "driver_rating": -1,
                     "date": str(timezone.now().date()),
                     "start_time": formatted_start_time2,
                     "end_time": formatted_end_time2,
                     "open_seats": 2,
                     "price": "20.00",
-                    'pickup_address' : "Mocked Pickup Address 2",
-                    'dropoff_address' : "Mocked Drop-off Address 2"
+                    "dropoff_latitude":"40.110052", 
+                    "dropoff_longitude":"-88.234161",
+                    "pickup_latitude":"1.000000", 
+                    "pickup_longitude":"1.000000",
+                    "dropoff_location":"",
+                    "pickup_location":"",
+                    "ride_status": 2,
+                    'hoppers': []
                 }
             ]}
         )
@@ -253,39 +265,52 @@ class PastHopsTests(TestCase):
 
         response = self.client.get(reverse('past_hops'))
 
-        formatted_start_time = self.s_time.strftime('%H:%M:%S')
-        formatted_end_time = (self.s_time + timedelta(hours=2)).strftime('%H:%M:%S')
+        formatted_start_time = self.s_time.strftime('%H:%M:%S.%f')
+        formatted_end_time = (self.s_time + timedelta(hours=2)).strftime('%H:%M:%S.%f')
 
-        formatted_start_time2 = self.s_time2.strftime('%H:%M:%S')
-        formatted_end_time2 = (self.s_time2 + timedelta(hours=2)).strftime('%H:%M:%S')
+        formatted_start_time2 = self.s_time2.strftime('%H:%M:%S.%f')
+        formatted_end_time2 = (self.s_time2 + timedelta(hours=2)).strftime('%H:%M:%S.%f')
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(
             str(response.content, encoding='utf8'),
             {"past_hops": [
                 {
-                    "trip_id": 1,
+                    "id": 1,
+                    "driver_id": 2,
                     "driver_username": 'driver',
-                    "driver_rating": -1,
                     "date": str(timezone.now().date()),
                     "start_time": formatted_start_time,
                     "end_time": formatted_end_time,
                     "open_seats": 4,
                     "price": "10.00",
-                    'pickup_address' : "Mocked Pickup Address for Hops",
-                    'dropoff_address' : "Mocked Drop-off Address for Hops"
+                    "pickup_latitude":"40.110052", 
+                    "pickup_longitude":"-88.234161",
+                    "dropoff_latitude":"1.000000", 
+                    "dropoff_longitude":"1.000000",
+                    "dropoff_location":"",
+                    "pickup_location":"",
+                    "ride_status": 2,
+                    "hoppers": [1]
+
                 }, 
                 {
-                    "trip_id": 2,
+                    "id": 2,
+                    "driver_id": 2,
                     "driver_username": 'driver',
-                    "driver_rating": -1,
                     "date": str(timezone.now().date()),
                     "start_time": formatted_start_time2,
                     "end_time": formatted_end_time2,
                     "open_seats": 2,
                     "price": "20.00",
-                    'pickup_address' : "Mocked Pickup Address 2 for Hops",
-                    'dropoff_address' : "Mocked Drop-off Address 2 for Hops"
+                    "dropoff_latitude":"40.110052", 
+                    "dropoff_longitude":"-88.234161",
+                    "pickup_latitude":"1.000000", 
+                    "pickup_longitude":"1.000000",
+                    "dropoff_location":"",
+                    "pickup_location":"",
+                    "ride_status": 2,
+                    "hoppers": [1]
                 }
             ]}
         )
@@ -326,27 +351,27 @@ class CurrentHopperRequestsTests(TestCase):
         expected_response = {
             "hopper_requests": [
                 {
-                "hopper_request_id": 1,
+                "id": 1,
                 "trip_id": 1,
                 "hopper_id": 2,
                 "hopper_username": 'hopper',
-                "hopper_status": 'Requested',
+                "hopper_status": 0,
                 "hopper_rating": 3
                 },
                 {
-                "hopper_request_id": 2,
+                "id": 2,
                 "trip_id": 1,
                 "hopper_id": 3,
                 "hopper_username": 'hopper2',
-                "hopper_status": 'Rejected',
+                "hopper_status": 2,
                 "hopper_rating": 1
                 },
                 {
-                "hopper_request_id": 3,
+                "id": 3,
                 "trip_id": 1,
                 "hopper_id": 4,
                 "hopper_username": 'hopper3',
-                "hopper_status": 'Accepted',
+                "hopper_status": 1,
                 "hopper_rating": 5
                 }
             ]
@@ -403,27 +428,27 @@ class HoppersRequestsStatusTests(TestCase):
         expected_response = {
             "hopper_requests": [
                 {
-                "hopper_request_id": 1,
+                "id": 1,
                 "trip_id": 1,
                 "hopper_id": 2,
                 "hopper_username": 'hopper',
-                "hopper_status": 'Requested',
+                "hopper_status": 0,
                 "hopper_rating": 3
                 },
                 {
-                "hopper_request_id": 2,
+                "id": 2,
                 "trip_id": 2,
                 "hopper_id": 2,
                 "hopper_username": 'hopper',
-                "hopper_status": 'Rejected',
+                "hopper_status": 2,
                 "hopper_rating": 3
                 },
                 {
-                "hopper_request_id": 3,
+                "id": 3,
                 "trip_id": 3,
                 "hopper_id": 2,
                 "hopper_username": 'hopper',
-                "hopper_status": 'Accepted',
+                "hopper_status": 1,
                 "hopper_rating": 3
                 }
             ]
