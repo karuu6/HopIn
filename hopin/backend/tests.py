@@ -144,17 +144,17 @@ class PastDrivesTests(TestCase):
         Profile.objects.create(user=self.user, picture='default.png', driver_rating=-1, hopper_rating=-1)
 
         # Create test trips
-        Trip.objects.create(driver_id=self.user, date=timezone.now(), start_time=self.s_time, 
+        Trip.objects.create(driver_id=self.user, date=timezone.now().date(), start_time=self.s_time, 
                             end_time=self.s_time + timedelta(hours=2), pickup_latitude='40.1100516', 
                             pickup_longitude='-88.2341611', dropoff_latitude='1.000000', 
                             dropoff_longitude='1.000000', open_seats=4, price='10.00', ride_status=2)
         
-        Trip.objects.create(driver_id=self.user, date=timezone.now(), start_time=self.s_time2, 
+        Trip.objects.create(driver_id=self.user, date=timezone.now().date(), start_time=self.s_time2, 
                             end_time=self.s_time2 + timedelta(hours=2), pickup_latitude='1.000000', 
                             pickup_longitude='1.000000', dropoff_latitude='40.1100516', 
                             dropoff_longitude='-88.2341611', open_seats=2, price='20.00', ride_status=2)
         
-        Trip.objects.create(driver_id=self.user, date=timezone.now(), start_time=self.s_time3, 
+        Trip.objects.create(driver_id=self.user, date=timezone.now().date(), start_time=self.s_time3, 
                             end_time=self.s_time2 + timedelta(hours=2), pickup_latitude='10.000000', 
                             pickup_longitude='10.000000', dropoff_latitude='10.000000', 
                             dropoff_longitude='10.000000', open_seats=3, price='100.00', ride_status=0)
@@ -167,6 +167,7 @@ class PastDrivesTests(TestCase):
 
     @patch('backend.maps.google_maps.convert_coords')
     def test_past_drives(self, mock_convert_coords):
+        self.maxDiff = None
 
 
         mock_convert_coords.side_effect = ['Mocked Pickup Address', 'Mocked Drop-off Address', 'Mocked Pickup Address 2', 'Mocked Drop-off Address 2']
@@ -227,12 +228,12 @@ class PastHopsTests(TestCase):
         Profile.objects.create(user=self.driver, picture='default.png', driver_rating=-1, hopper_rating=-1)
 
         # Create test trips
-        trip1 = Trip.objects.create(driver_id=self.driver, date=timezone.now(), start_time=self.s_time, 
+        trip1 = Trip.objects.create(driver_id=self.driver, date=timezone.now().date(), start_time=self.s_time, 
                                     end_time=self.s_time + timedelta(hours=2), pickup_latitude='40.1100516', 
                                     pickup_longitude='-88.2341611', dropoff_latitude='1.000000', 
                                     dropoff_longitude='1.000000', open_seats=4, price='10.00', ride_status=2)
         
-        trip2 = Trip.objects.create(driver_id=self.driver, date=timezone.now(), start_time=self.s_time2, 
+        trip2 = Trip.objects.create(driver_id=self.driver, date=timezone.now().date(), start_time=self.s_time2, 
                                     end_time=self.s_time2 + timedelta(hours=2), pickup_latitude='1.000000', 
                                     pickup_longitude='1.000000', dropoff_latitude='40.1100516', 
                                     dropoff_longitude='-88.2341611', open_seats=2, price='20.00', ride_status=2)
