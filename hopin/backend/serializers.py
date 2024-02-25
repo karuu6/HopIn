@@ -93,6 +93,6 @@ class HopperRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = HopperRequest
         fields = '__all__'
-    
+
 
 

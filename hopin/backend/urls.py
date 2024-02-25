@@ -14,4 +14,5 @@ urlpatterns = [
     path("post_trip/", views.PostTrip.as_view(), name="post_trip"),
     path("current_hopper_requests/<int:trip_id>/", views.CurrentHopperRequests.as_view(), name="current_hopper_requests"),
     path("hoppers_requests_status", views.HoppersRequestsStatus.as_view(), name="hoppers_requests_status"),
+    path('trips/<int:trip_id>/create-hopper-request/', views.AcceptHopperRequest.as_view(), name='accept-hopper-request'),
 ]

@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.contrib.auth.models import User
+from django.db.models import F
+from rest_framework import status
+
 
 class Search(APIView):
     permission_classes = (IsAuthenticated,)
@@ -126,3 +129,32 @@ class SignUp(generics.CreateAPIView):
 class PostTrip(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = TripSerializer
+
+class AcceptHopperRequest(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, trip_id):
+
+        #decrement details of open seats, add request.user.id to list of hoppers in trip
+        # Get the trip object
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        # Create a serializer instance with the data from the request
+        serializer = HopperRequestSerializer(data=request.data)
+        
+        # Check if the serializer data is valid
+        if serializer.is_valid():
+            # Save the HopperRequest instance, associating it with the trip
+            assert(trip.open_seats > 0)
+            trip.open_seats = F('open_seats') - 1
+            trip.hoppers.add(serializer.get_hopper_id)  # Add the current user to hoppers
+            trip.save(update_fields=['open_seats'])
+            trip.refresh_from_db() 
+            
+            # Prepare the response data
+            
+            # Return a successful response with the created hopper request data
+            return Response(None, status=status.HTTP_201_CREATED)
+        else:
+            # If the data is not valid, return an error response
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

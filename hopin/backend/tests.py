@@ -9,6 +9,8 @@ from decimal import Decimal
 from .maps.google_maps import find_within_radius
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
+from rest_framework import status
+
 
 class TripSearchTestCase(TestCase):
 
@@ -431,6 +433,32 @@ class HoppersRequestsStatusTests(TestCase):
             str(response.content, encoding='utf8'),
             expected_response
         )
+
+class AcceptHopperRequestTestCase(TestCase):
+
+    def setUp(self):
+        # Create a test user and trip
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.trip = Trip.objects.create(
+            driver_id=self.user,
+            open_seats=1,
+            # Initialize other necessary fields
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_accept_hopper_request(self):
+        # Assuming the trip_id is part of the URL
+        url = reverse('accept-hopper-request', kwargs={'trip_id': self.trip.pk})
+        data = {
+            # Your expected request data
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        self.trip.refresh_from_db()  # Refresh to check changes
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self.trip.open_seats, 0) 
 
 
 class UtilsTestCase(TestCase):
