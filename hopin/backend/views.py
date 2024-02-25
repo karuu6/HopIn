@@ -65,7 +65,6 @@ class Search(APIView):
         
         return Response({'trips': trips_data})
 
-from .models import Trip
 
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
@@ -123,6 +122,12 @@ class SignUp(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SignUpSerializer
 
+
 class PostTrip(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = TripSerializer
+
+
+class PostHopperRequest(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = HopperRequestSerializer
