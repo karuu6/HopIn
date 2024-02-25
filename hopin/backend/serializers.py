@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
-from .models import Trip
+from .models import Trip, Profile
 from .maps import google_maps
 
 
@@ -13,7 +13,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'username': {'required': False},
-            'password': {'required': False},
+            'password': {'required': False, 'write_only': True},
         }
 
     def create(self, validated_data):
@@ -24,9 +24,17 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
+        profile = Profile(user = user)
+        profile.save()
+
         return user
 
 class TripSerializer(serializers.ModelSerializer):
+    driver_username = serializers.SerializerMethodField('get_driver_username')
+
+    def get_driver_username(self, obj):
+        return obj.driver_id.username
+
     class Meta:
         model = Trip
         fields = '__all__'
