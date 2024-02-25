@@ -3,8 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date, parse_time
 from .models import *
 from .maps import google_maps
-from .responses import TripResponse
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, TripSerializer
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -75,8 +74,9 @@ class PastDrives(APIView):
         user = request.user
         # Using the 'driven_trips' related_name to filter trips where the user is a driver
         past_trips = user.driven_trips.filter(ride_status=2)
+        serializer = TripSerializer()
 
-        trips_data = [TripResponse(trip).to_dict() for trip in past_trips]
+        trips_data = [serializer.serialize(trip) for trip in past_trips]
         
         return Response({"past_trips": trips_data})
 
@@ -94,6 +94,9 @@ class PastHops(APIView):
         return Response({"past_hops": hops_data})
 
 class SignUp(generics.CreateAPIView):
-    queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = SignUpSerializer
+
+class PostTrip(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TripSerializer
