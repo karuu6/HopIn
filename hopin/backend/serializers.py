@@ -94,5 +94,19 @@ class HopperRequestSerializer(serializers.ModelSerializer):
         model = HopperRequest
         fields = '__all__'
 
+        extra_kwargs = {
+            'hopper_id': {'required': False},
+            'hopper_status': {'required': False},
+        }
+    
+    def create(self, validated_data):
+        hopper_request = HopperRequest(
+            trip_id = validated_data['trip_id'],
+            hopper_id = self.context['request'].user,
+            hopper_status = 0,
+        )
+
+        hopper_request.save()
+        return hopper_request
 
 

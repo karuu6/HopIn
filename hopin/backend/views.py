@@ -68,7 +68,6 @@ class Search(APIView):
         
         return Response({'trips': trips_data})
 
-from .models import Trip
 
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
@@ -126,6 +125,7 @@ class SignUp(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SignUpSerializer
 
+
 class PostTrip(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = TripSerializer
@@ -158,3 +158,7 @@ class AcceptHopperRequest(APIView):
         else:
             # If the data is not valid, return an error response
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostHopperRequest(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = HopperRequestSerializer
