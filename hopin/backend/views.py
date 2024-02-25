@@ -72,7 +72,7 @@ class PastDrives(APIView):
     def get(self, request):
         user = request.user
         # Using the 'driven_trips' related_name to filter trips where the user is a driver
-        past_trips = user.driven_trips.filter(ride_status=0)
+        past_trips = user.driven_trips.filter(ride_status=2)
 
         trips_data = [TripSerializer(trip).data for trip in past_trips]
         
@@ -88,7 +88,7 @@ class PastHops(APIView):
         # Using the 'hopped_trips' related_name to filter trips where the user is a hopper
         past_hops = user.hopped_trips.filter(ride_status=2)
         
-        hops_data = [TripSerializer(trip).data for hop in past_hops]
+        hops_data = [TripSerializer(hop).data for hop in past_hops]
         
         return Response({"past_hops": hops_data})
     
