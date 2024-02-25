@@ -1,10 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date, parse_time
 from .models import *
 from .maps import google_maps
-from .responses import TripResponse
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, TripSerializer, HopperRequestSerializer
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -12,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.contrib.auth.models import User
-
 
 class Search(APIView):
     permission_classes = (IsAuthenticated,)
@@ -58,16 +56,15 @@ class Search(APIView):
         dropoff_trip_coordinates = [((trip.dropoff_latitude, trip.dropoff_longitude), trip.id) for trip in trips if trip.id in filtered_for_pickup_trip_ids]
         filtered_for_dropoff_trip_ids = google_maps.find_within_radius(dropoff_trip_coordinates, (dropoff_latitude, dropoff_longitude), radius)
         
-
-        
         # Convert the Trip objects into a list of dictionaries (or any other format you need) to return as JSON
         trips_data = []
 
         for trip in trips:
             if trip.id in filtered_for_dropoff_trip_ids:
-                trips_data.append(TripResponse(trip).to_dict())
+                trips_data.append(TripSerializer(trip).data)
         
         return Response({'trips': trips_data})
+
 
 class PastDrives(APIView):
     permission_classes = (IsAuthenticated,)
@@ -76,9 +73,10 @@ class PastDrives(APIView):
         # Using the 'driven_trips' related_name to filter trips where the user is a driver
         past_trips = user.driven_trips.filter(ride_status=2)
 
-        trips_data = [TripResponse(trip).to_dict() for trip in past_trips]
+        trips_data = [TripSerializer(trip).data for trip in past_trips]
         
         return Response({"past_trips": trips_data})
+
 
 class PastHops(APIView):
     permission_classes = (IsAuthenticated,)
@@ -89,11 +87,47 @@ class PastHops(APIView):
         # Using the 'hopped_trips' related_name to filter trips where the user is a hopper
         past_hops = user.hopped_trips.filter(ride_status=2)
         
-        hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
+        hops_data = [TripSerializer(hop).data for hop in past_hops]
         
         return Response({"past_hops": hops_data})
+    
+
+class CurrentHopperRequests(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, trip_id):
+        trip = get_object_or_404(Trip, pk=trip_id)
+        
+        hopper_requests = trip.trips_hopper_requests.all()
+
+        requests_data = [HopperRequestSerializer(request).data for request in hopper_requests]
+        
+        return Response({"hopper_requests": requests_data})
+
+
+class HoppersRequestsStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user_id = request.user.id
+        
+        hopper_requests = HopperRequest.objects.filter(hopper_id=user_id)
+        
+        requests_data = [HopperRequestSerializer(request).data for request in hopper_requests]
+        
+        return JsonResponse({"hopper_requests": requests_data})
+
 
 class SignUp(generics.CreateAPIView):
-    queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = SignUpSerializer
+
+
+class PostTrip(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TripSerializer
+
+
+class PostHopperRequest(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = HopperRequestSerializer
