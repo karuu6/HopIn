@@ -71,6 +71,17 @@ const Hopper = ({ route, navigation }) => {
           Welcome Hopper!
         </Heading>
 
+        <Heading
+          size="md"
+          fontWeight="600"
+          color="coolGray.800"
+          _dark={{
+            color: "warmGray.50",
+          }}
+        >
+          Provide Trip Details Below:
+        </Heading>
+
         {/* <Text>Access Token: {access}</Text>
         <Text>New Access Token: {newAccessToken}</Text> */}
         {/* ... rest of your UI */}
@@ -107,13 +118,9 @@ const Hopper = ({ route, navigation }) => {
             onChangeText={(value) => setLeaveBy(value)}
           />
           <Button mt="2" colorScheme="indigo" onPress={handleSearchTrips}>
-            Search Trips
+            Search For Trips
           </Button>
         </Box>
-
-        <Button
-          onPress={() => navigation.navigate("Trips", { access, refresh })}
-        ></Button>
       </Center>
     </NativeBaseProvider>
   );

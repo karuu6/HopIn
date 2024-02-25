@@ -39,7 +39,7 @@ const Login = ({ navigation }) => {
         const refresh = response.data.refresh;
 
         // You can also navigate to another page upon successful login
-        navigation.navigate("Hopper", { access, refresh });
+        navigation.navigate("Start", { access, refresh });
       })
       .catch((error) => {
         console.error("Login failed", error.response.data);

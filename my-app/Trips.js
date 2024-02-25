@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Center, Box, Heading, Text, NativeBaseProvider } from "native-base";
+import {
+  Center,
+  Box,
+  Heading,
+  Text,
+  NativeBaseProvider,
+  Button,
+} from "native-base";
 
-const Trips = ({ route }) => {
+const Trips = ({ route, navigation }) => {
   const [trips, setTrips] = useState([]);
   const {
     access,
@@ -40,9 +47,14 @@ const Trips = ({ route }) => {
       })
       .catch((error) => {
         console.error("Error fetching trips:", error);
-        console.log("Bearer ${access}");
+        console.log(`Bearer ${access}`);
       });
   }, [access]); // Empty dependency array means this effect will run once on component mount
+
+  const handleRequestTrip = (tripId) => {
+    // Navigate to TripInfo component with the selected tripId
+    navigation.navigate("TripInfo", { refresh, access, tripId });
+  };
 
   return (
     <NativeBaseProvider>
@@ -69,6 +81,13 @@ const Trips = ({ route }) => {
                 <Text>Pickup Address: {trip.pickup_address}</Text>
                 <Text>Dropoff Address: {trip.dropoff_address}</Text>
                 {/* Add other fields you want to display */}
+                <Button
+                  onPress={() => handleRequestTrip(trip.id)}
+                  mt="2"
+                  colorScheme="indigo"
+                >
+                  Request Trip
+                </Button>
               </Box>
             ))}
           </Box>
