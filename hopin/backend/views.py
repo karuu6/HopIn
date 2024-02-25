@@ -12,6 +12,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.contrib.auth.models import User
 
+trip_serializer = TripSerializer()
+# hop_serializer = HopSerializer()
 
 class Search(APIView):
     permission_classes = (IsAuthenticated,)
@@ -57,14 +59,12 @@ class Search(APIView):
         dropoff_trip_coordinates = [((trip.dropoff_latitude, trip.dropoff_longitude), trip.id) for trip in trips if trip.id in filtered_for_pickup_trip_ids]
         filtered_for_dropoff_trip_ids = google_maps.find_within_radius(dropoff_trip_coordinates, (dropoff_latitude, dropoff_longitude), radius)
         
-
-        
         # Convert the Trip objects into a list of dictionaries (or any other format you need) to return as JSON
         trips_data = []
 
         for trip in trips:
             if trip.id in filtered_for_dropoff_trip_ids:
-                trips_data.append(TripResponse(trip).to_dict())
+                trips_data.append(trip_serializer.serialize(trip))
         
         return Response({'trips': trips_data})
 
@@ -74,9 +74,8 @@ class PastDrives(APIView):
         user = request.user
         # Using the 'driven_trips' related_name to filter trips where the user is a driver
         past_trips = user.driven_trips.filter(ride_status=2)
-        serializer = TripSerializer()
 
-        trips_data = [serializer.serialize(trip) for trip in past_trips]
+        trips_data = [trip_serializer.serialize(trip) for trip in past_trips]
         
         return Response({"past_trips": trips_data})
 
@@ -89,7 +88,7 @@ class PastHops(APIView):
         # Using the 'hopped_trips' related_name to filter trips where the user is a hopper
         past_hops = user.hopped_trips.filter(ride_status=2)
         
-        hops_data = [TripResponse(hop).to_dict() for hop in past_hops]
+        hops_data = [trip_serializer.serialize(hop) for hop in past_hops]
         
         return Response({"past_hops": hops_data})
 

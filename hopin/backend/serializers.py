@@ -78,4 +78,4 @@ class TripSerializer(serializers.ModelSerializer):
             price = validated_data['price'],
         )
         trip.save()
-        return trip
+        return trip    
